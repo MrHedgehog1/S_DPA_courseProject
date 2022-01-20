@@ -3,4 +3,4 @@ project(S_DPA_courseProject)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(S_DPA_courseProject main.cpp hospital.cpp hospital.h)
+add_executable(S_DPA_courseProject main.cpp)

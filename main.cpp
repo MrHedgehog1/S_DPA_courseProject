@@ -182,7 +182,7 @@ bool is_substring(std::string official, std::string find);
 void add(element*& head, Referral data);
 Referral remove(element*& head, int pos);
 element* get_element_at(element*& head, int pos);
-void sort_referral(int l, int r);
+//void sort_referral(int l, int r);
 void delete_referral_dock_num(std::string doc_id);
 void delete_referral_patient_docd(std::string patient_docd);
 int height(node* p);
@@ -204,15 +204,15 @@ void find_patient_name(node* p, std::string name);
 void add_doctor(Doctor a);
 bool check_error();
 std::string readDate();
-void read_patient();
-void read_doctor();
+void add_patient();
+void add_doctor();
 void look_all_doctors();
 void extend_table();
 void delete_doc(std::string num);
 Doctor* get_doc(std::string num);
 void find_doc_num(std::string num);
 void find_doc_name(std::string posi);
-void read_referral();
+void add_referral();
 void return_referral();
 //void add_book_library();
 void remove_doctor();
@@ -241,7 +241,7 @@ int main()
         switch (command)
         {
             case 1:
-                read_patient();
+                add_patient();
                 break;
             case 3:
                 look_all_patients(main_patient);
@@ -275,7 +275,7 @@ int main()
                 find_patient_name(main_patient, str);
                 break;
             case 7:
-                read_doctor();
+                add_doctor();
                 break;
             case 8:
                 remove_doctor();
@@ -302,7 +302,7 @@ int main()
                 find_doc_name(str);
                 break;
             case 13:
-                read_referral();
+                add_referral();
                 break;
             case 14:
                 return_referral();
@@ -881,7 +881,7 @@ std::string readDate()
     return "";
 }
 //добавление больного
-void read_patient()
+void add_patient()
 {
     int count_number = 0;
     char localLotNumber[2];
@@ -957,9 +957,10 @@ void read_patient()
 }
 
 //добавление врача
-void read_doctor()
+void add_doctor()
 {
-    char *first_name_and_initials;
+    char *first_name[23];
+    char *initials[2];
     std::string position;
     std::string appointmentSchedule;
     int officeNumber;
@@ -973,13 +974,15 @@ void read_doctor()
         is_error = check_error();
         if (!is_error)
         {
-            count = sscanf(input.c_str(), "%s", first_name_and_initials);
-            if (count != 1)
+            count = sscanf(input.c_str(), "%s %s", first_name, initials);
+            if (count != 2)
             {
                 std::cout << "Ошибка ввода имени врача." << std::endl;
             }
         }
-    } while (is_error || count != 1);
+    } while (is_error || count != 2);
+    std::string first_name_and_iitials = std::string(reinterpret_cast<const char *>(first_name)) + std::string(
+            reinterpret_cast<const char *>(initials));
     do {
         std::cout << "Введите специализацию: ";
         //std::cin >> _appointmentSchedule;
@@ -1022,12 +1025,12 @@ void read_doctor()
         }
     } while (is_error || input.empty());
 
-    Doctor book = Doctor(
-            first_name_and_initials,
-            position,
+    Doctor doctor = Doctor(
+            first_name_and_iitials,
             appointmentSchedule,
+            position,
             officeNumber);
-    add_doctor(book);
+    add_doctor(doctor);
 }
 
 //показать все записи Докторов
@@ -1128,10 +1131,10 @@ void find_doc_name(std::string posi)
 }
 
 //выдача направления пациенту
-void read_referral()
+void add_referral()
 {
     int count_number = 0;
-    char localLotNumber[3];
+    int localLotNumber = 0;
     int year_join = 0;
     std::string input;
     bool is_error;
@@ -1145,21 +1148,23 @@ void read_referral()
         is_error = check_error();
         if (!is_error)
         {
-            count = sscanf(input.c_str(), "%2s%6d", localLotNumber, &count_number);
+            count = sscanf(input.c_str(), "%2d %6d", &localLotNumber, &count_number);
             if (count != 2)
             {
                 std::cout << "Ошибка ввода регистрационного номера." << std::endl;
-                //count_try++;
             }
             else
             {
-                p = get_patient(main_patient, localLotNumber + add_zero(std::to_string(count_number), 6));
+                p = get_patient(main_patient, add_zero(std::to_string(localLotNumber),2) + add_zero(std::to_string(count_number), 6));
+                if (p == nullptr){
+                    std::cout << "Пациент с таким регистрационным номером не найден" << std::endl;
+                }
             }
         }
     } while (is_error || count != 2 || p == nullptr);
     char first_name[23];
     char initials[2];
-    Doctor* book = nullptr;
+    Doctor* doctor = nullptr;
     do {
         count_try = 0;
         std::cout << "Фамилию и инициалы врача: " << std::endl;
@@ -1168,7 +1173,7 @@ void read_referral()
         is_error = check_error();
         if (!is_error)
         {
-            count = sscanf(input.c_str(),"%s %s", first_name, initials);
+            count = sscanf(input.c_str(),"%s%s", first_name, initials);
             if (count != 2)
             {
                 std::cout << "Ошибка ввода." << std::endl;
@@ -1176,11 +1181,14 @@ void read_referral()
             }
             else
             {
-                book = get_doc(std::string(first_name) + std::string(initials));
+                doctor = get_doc(std::string(first_name) + std::string(initials));
+                if (doctor == nullptr)
+                {
+                    std::cout << "Нет врача с данным именем." << std::endl;
+                }
             }
         }
-        //count_try++;
-    } while (is_error || count != 2 || book->empty );
+    } while (is_error || count != 2 || doctor == nullptr );
     std::string take_time;
     do {
         std::cout << "Ведите время приёма : " << std::endl;
@@ -1193,23 +1201,26 @@ void read_referral()
     } while (return_date.empty());
 
     if (head == nullptr) {
-        std::cout << "Не выдано ни одного направления!" << std::endl;
+        std::cout << "Пока не выдано ни одного направления!" << std::endl;
     }
     if (head != nullptr){
         element* current = head;
         while (current->next != nullptr)
         {
-            node* listener = get_patient(main_patient, current->data._regNumberPatient);
+            node* patient = get_patient(main_patient, current->data._regNumberPatient);
             if (current->data._doctorFullName == std::string (first_name) + std::string(initials) && current->data._date_return_time == return_date && current->data._take_time == take_time ){
-                std::cout << " Направление к врачу : " << current->data._doctorFullName << " уже выданно " << listener->key._first_name << " " << listener->key._middle_name << std::endl;
+                std::cout << " Направление к врачу : " << current->data._doctorFullName << " уже выданно " << patient->key._first_name << " " << patient->key._middle_name << std::endl;
                 std::cout << " на время : " << current->data._take_time << " и дату: " << current->data._date_return_time << std::endl;
-                current = current->next;
                 return;
+            }
+            if (current->next == current)
+            {
+                break;
             }
         }
     }
     Referral tick = Referral(p->key.get_patient_id(),
-                             book->get_first_name_and_initials(),
+                             doctor->get_first_name_and_initials(),
                              take_time,
                              return_date);
     add(head, tick);
@@ -1225,7 +1236,7 @@ void return_referral()
     }
     print_all_given_referral();
     int count_number = 0;
-    char localLotNumber[3];
+    char localLotNumber[2];
     int year_join = 0;
     std::string input;
     bool is_error;
@@ -1468,7 +1479,7 @@ void start(){
     main_patient = insert(main_patient, client);
     Doctor book = Doctor(
             "ПетровПП",
-            "9:00 - 17:00",
+            "9:00-17:00",
             "Флеболог",
             1);
     add_doctor(book);

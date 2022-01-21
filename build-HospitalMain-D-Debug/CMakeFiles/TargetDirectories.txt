@@ -1,0 +1,11 @@
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/appHospitalMain.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/appHospitalMain_automoc_json_extraction.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/appHospitalMain_qmltyperegistration.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/all_qmltyperegistrations.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/appHospitalMain_other_files.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/appHospitalMain_qmllint.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/all_qmllint.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/appHospitalMain_tooling.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/edit_cache.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/rebuild_cache.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/CMakeFiles/appHospitalMain_autogen.dir

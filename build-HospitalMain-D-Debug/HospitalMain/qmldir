@@ -1,0 +1,4 @@
+module HospitalMain
+typeinfo appHospitalMain.qmltypes
+prefer :/HospitalMain/
+

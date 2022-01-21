@@ -1,0 +1,1 @@
+/usr/bin/g++ -g CMakeFiles/Hospital1.dir/Hospital1_autogen/mocs_compilation.cpp.o CMakeFiles/Hospital1.dir/main.cpp.o CMakeFiles/Hospital1.dir/mainwindow.cpp.o -o Hospital1  /usr/lib/libQt5Widgets.so.5.15.2 /usr/lib/libQt5Gui.so.5.15.2 /usr/lib/libQt5Core.so.5.15.2 

@@ -1,0 +1,4 @@
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-Hospital1-DesktopQT6-Debug/CMakeFiles/Hospital1.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-Hospital1-DesktopQT6-Debug/CMakeFiles/edit_cache.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-Hospital1-DesktopQT6-Debug/CMakeFiles/rebuild_cache.dir
+/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-Hospital1-DesktopQT6-Debug/CMakeFiles/Hospital1_autogen.dir

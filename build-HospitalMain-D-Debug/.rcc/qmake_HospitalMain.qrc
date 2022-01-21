@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/HospitalMain">
+    <file alias="qmldir">/home/mrhedghog/CLionProjects/S&DPA_courseProject/build-HospitalMain-D-Debug/HospitalMain/qmldir</file>
+  </qresource>
+</RCC>
+

@@ -3,12 +3,11 @@
 #include <limits>
 #include <cstring>
 # define NO_OF_CHARS 256
-//#include "books.h"
 
 std::string add_zero(std::string original, size_t need_len);
 int hashO(std::string num, int i);
 
-//читатели библиотеки
+//Пациенты
 struct Patient
 {
     std::string _regNumber;
@@ -49,21 +48,21 @@ struct Patient
     std::string Patient_to_string()
     {
         return _first_name + " " + _middle_name + " " + _last_name + " Регистрационный номер : " +
-               get_listener_bookd() + " Адрес: " + _adress;
+                get_patient_id() + " Адрес: " + _adress;
     }
 
-    std::string get_listener_bookd()
+    std::string get_patient_id()
     {
         return _localLotNumber + _count_number;
     }
 
-    int compare_bookd(std::string bookd)
+    int compare_patient(std::string bookd)
     {
-        return get_listener_bookd().compare(bookd);
+        return get_patient_id().compare(bookd);
     }
 };
 
-//книги в библиотеке
+//Врачи
 struct Doctor
 {
     std::string _first_name_and_initials;
@@ -90,7 +89,7 @@ struct Doctor
         this ->empty = false;
     }
 
-    std::string book_to_string()
+    std::string doc_to_string()
     {
         return "Имя врача: " + get_first_name_and_initials() + " Часы приёма : " + _appointmentSchedule + " Специализация : " + _position + " Кабинет : " +
                std::to_string(_officeNumber);
@@ -150,7 +149,7 @@ struct element
     element* prev;
 };
 
-//данные о читателях - авл-дерево
+//данные о пациентах - авл-дерево
 struct node
 {
     Patient key;
@@ -167,26 +166,25 @@ struct node
 };
 
 int hash_c = 7, hash_d = 17;
-int books_array_size = 4;
+int doc_array_size = 4;
 const int months[]{ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30 ,31 };		//количество дней в месяце
-char chars[10] = { '0', '1', '2','3','4','5','6', '7', '8','9' };		//1 символ читательского билета
-node* main_listener = nullptr;
+char chars[10] = { '0', '1', '2','3','4','5','6', '7', '8','9' };		//1 символ ID пациента
+node* main_patient = nullptr;
 element* head = nullptr;
-int tickets_count = 0;
+int referral_count = 0;
 
 
-void sort_tickets(int l, int r);
-node* get_listener(node* p, std::string id);
+void sort_referral(int l, int r);
+node* get_patient(node* p, std::string id);
 bool check_string(std::string original);
 int hash_first(std::string num);
-int hash_second(std::string num);
 bool is_substring(std::string official, std::string find);
 void add(element*& head, Referral data);
 Referral remove(element*& head, int pos);
 element* get_element_at(element*& head, int pos);
-void sort_tickets(int l, int r);
-void delete_ticket_book_num(std::string book_id);
-void delete_tickets_listener_bookd(std::string listener_bookd);
+void sort_referral(int l, int r);
+void delete_referral_dock_num(std::string doc_id);
+void delete_referral_patient_docd(std::string patient_docd);
 int height(node* p);
 int bfactor(node* p);
 void fixheight(node* p);
@@ -197,33 +195,33 @@ node* insert(node* p, Patient k);
 node* findmin(node* p);
 node* removemin(node* p);
 //Хэш-таблица в программе
-Doctor* books_array = new Doctor[books_array_size];
-void look_all_listeners(node* p);
+Doctor* doctors_array = new Doctor[doc_array_size];
+void look_all_patients(node* p);
 void remove_all(node*& p);
-node* remove(node* p, std::string listener_bookd);
-void find_listener_bookd(node* p, std::string listener_bookd);
-void find_listener_name(node* p, std::string name);
-void add_book(Doctor a);
+node* remove(node* p, std::string patient_docd);
+void find_patient_docd(node* p, std::string patient_docd);
+void find_patient_name(node* p, std::string name);
+void add_doctor(Doctor a);
 bool check_error();
 std::string readDate();
-void read_listener();
-void read_book();
-void look_all_books();
+void read_patient();
+void read_doctor();
+void look_all_doctors();
 void extend_table();
-void delete_book(std::string num);
-Doctor* get_book(std::string num);
-void find_book_num(std::string num);
-void find_book_name(std::string posi);
-void read_ticket();
-void return_ticket();
-void add_book_library();
-void remove_book_library();
-void delete_all_books();
-node* get_listener(node* p, std::string bookd);
+void delete_doc(std::string num);
+Doctor* get_doc(std::string num);
+void find_doc_num(std::string num);
+void find_doc_name(std::string posi);
+void read_referral();
+void return_referral();
+//void add_book_library();
+void remove_doctor();
+void delete_all_doctors();
+node* get_patient(node* p, std::string id);
 void help_command();
 short inputValidationShort(short min, short max);
 bool inputValidation(char chr, bool message);
-void print_all_given_books();
+void print_all_given_referral();
 std::string readTime();
 void badCharHeuristic(std::string str, int size, int badchar[NO_OF_CHARS]);
 int max(int a, int b);
@@ -233,20 +231,20 @@ void start();
 int main()
 {
     start();
-    //delete[] first_name_and_initials;
     unsigned short command;
     std::string str;
-    while (true)
+    bool exit = false;
+    while (!exit)
     {
         help_command();
         command = inputValidationShort(1, 17);
         switch (command)
         {
             case 1:
-                read_listener();
+                read_patient();
                 break;
             case 3:
-                look_all_listeners(main_listener);
+                look_all_patients(main_patient);
                 break;
             case 2:
                 std::cout << "Введите регистрационный номер вида MMNNNNNN,\n"
@@ -254,10 +252,10 @@ int main()
                              "(цифры)." << std::endl;
                 std::cin.ignore((std::numeric_limits<short>::max)(), '\n');
                 getline(std::cin, str);
-                main_listener = remove(main_listener, str);
+                main_patient = remove(main_patient, str);
                 break;
             case 4:
-                remove_all(main_listener);
+                remove_all(main_patient);
                 while (head != nullptr)
                 {
                     remove(head, 0);
@@ -267,30 +265,26 @@ int main()
                 std::cout << "Введите регистрационный номер в формате MMNNNNNN " << std::endl;
                 std::cin.ignore();
                 getline(std::cin, str);
-                find_listener_bookd(main_listener, str);
+                find_patient_docd(main_patient, str);
                 break;
             case 6:
                 std::cout << "Ведите имя пациента: ";
                 std::cin.ignore();
                 std::cin >> str;
                 std::cout << "----------" << std::endl;
-                find_listener_name(main_listener, str);
+                find_patient_name(main_patient, str);
                 break;
             case 7:
-                read_book();
+                read_doctor();
                 break;
             case 8:
-                remove_book_library();
+                remove_doctor();
                 break;
-                //std::cout << "Введите номер книги 'NNN.MMM': ";
-                //std::cin >> str;
-                //delete_book(str);
-                //break;
             case 9:
-                look_all_books();
+                look_all_doctors();
                 break;
             case 10:
-                delete_all_books();
+                delete_all_doctors();
                 while (head != nullptr) {
                     remove(head, 0);
                 }
@@ -298,28 +292,26 @@ int main()
             case 11:
                 std::cout << "Введите имя врача : ";
                 std::cin >> str;
-                find_book_num(str);
+                find_doc_num(str);
                 break;
             case 12:
                 std::cin.clear();
                 std::cout << "Введите специализацию врача : " << std::endl;
                 std::cin.ignore();
                 getline(std::cin, str);
-                find_book_name(str);
+                find_doc_name(str);
                 break;
             case 13:
-                read_ticket();
+                read_referral();
                 break;
-                //add_book_library();
-                //break;
             case 14:
-                return_ticket();
+                return_referral();
                 break;
             case 15:
-                print_all_given_books();
+                print_all_given_referral();
                 break;
             case 16:
-
+                exit = true;
                 break;
             default:
                 break;
@@ -369,20 +361,6 @@ int hash_first(std::string num) {
     return hash;
 }
 
-//Дополнительная хэш-функция в программе
-int hash_second(std::string num)
-{
-    int hash = 0;
-    int pow = 1;
-    for (size_t i = 0; i < num.length(); ++i)
-    {
-        hash += (num[i]) * pow;
-        pow *= 2;
-    }
-    return hash;
-}
-
-//Суммирование значений основной и дополнительной хеш-функций в программе
 int hashO(std::string num, int i)
 {
     int temp = hash_first(num);
@@ -433,7 +411,7 @@ bool is_substring(std::string official, std::string find)
             j--;
         if (j < 0)
         {
-            printf("\n pattern occurs at shift = %d", s);
+            printf("\n pattern occurs at shift = %d\n", s);
             return true;
             s += (s + m < n) ? m - badchar[official[s + m]] : 1;
         }
@@ -461,8 +439,8 @@ void add(element*& head, Referral data)
         temp->prev = head->prev;
         head->prev = temp;
     }
-    ++tickets_count;
-    sort_tickets(0, tickets_count - 1); //!!!!!!!!!!!!!!!!!
+    ++referral_count;
+    sort_referral(0, referral_count - 1); //!!!!!!!!!!!!!!!!!
 }
 
 Referral remove(element*& head, int pos)
@@ -478,7 +456,7 @@ Referral remove(element*& head, int pos)
     cur->prev->next = cur->next;
     cur->next->prev = cur->prev;
     delete cur;
-    --tickets_count;
+    --referral_count;
     return temp;
 }
 
@@ -499,7 +477,7 @@ element* get_element_at(element*& head, int pos)
 }
 
 //Быстрая сортировка (Хоара)
-void sort_tickets(int l, int r)
+void sort_referral(int l, int r)
 {
     int i = l, j = r, middle = (l + r) / 2;
     Referral x = get_element_at(head, middle)->data;
@@ -528,68 +506,67 @@ void sort_tickets(int l, int r)
     } while (i <= j);
     if (i < r)
     {
-        sort_tickets(i, r);
+        sort_referral(i, r);
     }
     if (l < j)
     {
-        sort_tickets(l, j);
+        sort_referral(l, j);
     }
 }
 
-void delete_ticket_book_num(std::string book_id)
+void delete_referral_dock_num(std::string doc_id)
 {
     element* cur = head;
     int pos = 0;
     if (head == nullptr)
     {
-        std::cout << "Книги не существует." << std::endl;
+        std::cout << "Записи не существует." << std::endl;
     }
     else
     {
-        while (cur->next != head && cur->data._doctorFullName.compare(book_id) != 0)
+        while (cur->next != head && cur->data._doctorFullName.compare(doc_id) != 0)
         {
             cur = cur->next;
             ++pos;
         }
-        if (cur->data._doctorFullName.compare(book_id) != 0)
+        if (cur->data._doctorFullName.compare(doc_id) != 0)
         {
-            std::cout << "Книги не существует." << std::endl;
+            std::cout << "Записи не существует." << std::endl;
             return;
         }
         remove(head, pos);
         std::cout << "Удалено." << std::endl;
-        //sort_tickets(0, tickets_count - 1); //!!!!!!!!!!!!!!!!!!!!!
     }
 }
 
-void delete_tickets_listener_bookd(std::string listener_bookd)
+void delete_referral_patient_docd(std::string patient_docd)
 {
     element* cur = head;
     int pos = 0;
     if (head == nullptr)
     {
-        std::cout << "Книги не существует" << std::endl; //!!!!!!!!!!!!!!!!!!!!!!
+        std::cout << "Записи не существует" << std::endl; //!!!!!!!!!!!!!!!!!!!!!!
     }
     else
     {
         do {
-            while (cur->next != head && cur->data._regNumberPatient.compare(listener_bookd) != 0)
+            while (cur->next != head && cur->data._regNumberPatient.compare(patient_docd) != 0)
             {
                 cur = cur->next;
                 ++pos;
             }
-            if (cur->data._regNumberPatient.compare(listener_bookd) != 0)
+            if (cur->data._regNumberPatient.compare(patient_docd) != 0)
             {
-                std::cout << "Книги не существует" << std::endl; //!!!!!!!!!!!!!!!!!!!!!!
+                std::cout << "Записи не существует" << std::endl; //!!!!!!!!!!!!!!!!!!!!!!
                 return;
             }
             cur = cur->next;
             remove(head, pos);
         } while (head != nullptr && cur != head);
         std::cout << "Удалено." << std::endl;
-        if (tickets_count > 1) //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (referral_count > 1) //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         {
-            sort_tickets(0, tickets_count - 1);
+            sort_referral(0, referral_count - 1);
         }
     }
 }
@@ -689,13 +666,13 @@ node* removemin(node* p)
 }
 
 //Обратный обход дерева
-void look_all_listeners(node* p)
+void look_all_patients(node* p)
 {
     if (!p) {
         return;
     }
-    look_all_listeners(p->left);
-    look_all_listeners(p->right);
+    look_all_patients(p->left);
+    look_all_patients(p->right);
     std::cout << p->key.Patient_to_string() << std::endl << "---" << std::endl;
 }
 
@@ -713,23 +690,23 @@ void remove_all(node*& p)
 }
 
 //
-node* remove(node* p, std::string listener_bookd)
+node* remove(node* p, std::string patient_docd)
 {
     if (!p) return nullptr;
-    int comp = listener_bookd.compare(p->key.get_listener_bookd());
+    int comp = patient_docd.compare(p->key.get_patient_id());
     if (comp < 0)
     {
-        p->left = remove(p->left, listener_bookd);
+        p->left = remove(p->left, patient_docd);
     }
     else if (comp > 0)
     {
-        p->right = remove(p->right, listener_bookd);
+        p->right = remove(p->right, patient_docd);
     }
     else	// k == p->key
     {
         node* q = p->left;
         node* r = p->right;
-        delete_tickets_listener_bookd(p->key.get_listener_bookd());
+        delete_referral_patient_docd(p->key.get_patient_id());
         delete p;
         if (!r)
         {
@@ -744,31 +721,30 @@ node* remove(node* p, std::string listener_bookd)
 }
 
 //
-void find_listener_bookd(node* p, std::string listener_bookd)
+void find_patient_docd(node* p, std::string patient_docd)
 {
     if (!p)
     {
         std::cout << "Нет пациента" << std::endl;
         return;
     }
-    int comp = listener_bookd.compare(p->key.get_listener_bookd());
+    int comp = patient_docd.compare(p->key.get_patient_id());
     if (comp < 0)
     {
-        find_listener_bookd(p->left, listener_bookd);
+        find_patient_docd(p->left, patient_docd);
     }
     else if (comp > 0)
     {
-        find_listener_bookd(p->right, listener_bookd);
+        find_patient_docd(p->right, patient_docd);
     }
     else // k == p->key
     {
         std::cout << p->key.Patient_to_string() << std::endl;
-        //look_all_ticket_at_listener(p -> key);
     }
 }
 
-//поиск читателя по имени
-void find_listener_name(node* p, std::string name)
+//поиск пациента по имени
+void find_patient_name(node* p, std::string name)
 {
     if (!p)
     {
@@ -781,28 +757,28 @@ void find_listener_name(node* p, std::string name)
         std::cout << p->key.Patient_to_string() << std::endl;
         std::cout << "----------" << std::endl;
     }
-    find_listener_name(p->left, name);
-    find_listener_name(p->right, name);
+    find_patient_name(p->left, name);
+    find_patient_name(p->right, name);
 }
 
 //
-void add_book(Doctor a)
+void add_doctor(Doctor a)
 {
     int hs;
     int i = 0;
     while (true)
     {
-        if (i == books_array_size)
+        if (i == doc_array_size)
         {
             extend_table();
         }
-        hs = a.hash(i) % books_array_size;
-        if (books_array[hs].empty)
+        hs = a.hash(i) % doc_array_size;
+        if (doctors_array[hs].empty)
         {
-            books_array[hs] = a;
+            doctors_array[hs] = a;
             break;
         }
-        else if (books_array[hs].compare(a) == 0)
+        else if (doctors_array[hs].compare(a) == 0)
         {
             std::cout << "Запись уже существует." << std::endl;
             return;
@@ -905,7 +881,7 @@ std::string readDate()
     return "";
 }
 //добавление больного
-void read_listener()
+void read_patient()
 {
     int count_number = 0;
     char localLotNumber[2];
@@ -977,11 +953,11 @@ void read_listener()
                              adress);
     //delete region_code, num;
     //delete[] localLotNumber;
-    main_listener = insert(main_listener, client);
+    main_patient = insert(main_patient, client);
 }
 
 //добавление врача
-void read_book()
+void read_doctor()
 {
     char *first_name_and_initials;
     std::string position;
@@ -1051,19 +1027,18 @@ void read_book()
             position,
             appointmentSchedule,
             officeNumber);
-    //delete[] first_name_and_initials;
-    add_book(book);
+    add_doctor(book);
 }
 
-//показать все книги
-void look_all_books()
+//показать все записи Докторов
+void look_all_doctors()
 {
     int num = 0;
-    for (int i = 0; i < books_array_size; ++i)
+    for (int i = 0; i < doc_array_size; ++i)
     {
-        if (!books_array[i].empty)
+        if (!doctors_array[i].empty)
         {
-            std::cout << ++num << ". " << books_array[i].book_to_string() << std::endl;
+            std::cout << ++num << ". " << doctors_array[i].doc_to_string() << std::endl;
         }
     }
 }
@@ -1071,34 +1046,34 @@ void look_all_books()
 //функция расширения хэш-таблицы
 void extend_table()
 {
-    int new_books_array_size = books_array_size * 2;
+    int new_books_array_size = doc_array_size * 2;
     Doctor* new_books_array = new Doctor[new_books_array_size];
-    for (int i = 0; i < books_array_size; i++)
+    for (int i = 0; i < doc_array_size; i++)
     {
-        memcpy(&new_books_array[i], &books_array[i], sizeof(Doctor));
+        memcpy(&new_books_array[i], &doctors_array[i], sizeof(Doctor));
     }
-    books_array = new_books_array;
-    books_array_size = new_books_array_size;
+    doctors_array = new_books_array;
+    doc_array_size = new_books_array_size;
 }
 
-//удаление книги
-void delete_book(std::string num)
+//удаление доктора
+void delete_doc(std::string num)
 {
     int hs;
     int i = 0;
     while (true)
     {
-        hs = hashO(num, i) % books_array_size;
-        if (books_array[hs].empty)
+        hs = hashO(num, i) % doc_array_size;
+        if (doctors_array[hs].empty)
         {
-            std::cout << "Нет книг по введенному номеру." << std::endl;
+            std::cout << "Не найдено имя в записях." << std::endl;
             return;
         }
-        else if (books_array[hs].get_first_name_and_initials().compare(num) == 0)
+        else if (doctors_array[hs].get_first_name_and_initials().compare(num) == 0)
         {
-            delete_ticket_book_num(num);
-            books_array[hs] = Doctor();
-            std::cout << "Книга удалена." << std::endl;
+            delete_referral_dock_num(num);
+            doctors_array[hs] = Doctor();
+            std::cout << "Запись удалена." << std::endl;
             return;
         }
         ++i;
@@ -1106,54 +1081,54 @@ void delete_book(std::string num)
 }
 
 //данные о книге
-Doctor* get_book(std::string num)
+Doctor* get_doc(std::string num)
 {
     int hs;
     int i = 0;
     while (true)
     {
-        hs = hashO(num, i) % books_array_size;
-        if (books_array[hs].empty || books_array[hs].get_first_name_and_initials().compare(num) == 0)
+        hs = hashO(num, i) % doc_array_size;
+        if (doctors_array[hs].empty || doctors_array[hs].get_first_name_and_initials().compare(num) == 0)
         {
-            return &books_array[hs];
+            return &doctors_array[hs];
         }
         ++i;
     }
 }
 
-//поиск книги по номеру
-void find_book_num(std::string num)
+//поиск врача по номеру
+void find_doc_num(std::string num)
 {
-    Doctor* temp = get_book(num);
+    Doctor* temp = get_doc(num);
     if (temp->empty)
     {
         std::cout << "Нет врача с данным именем." << std::endl;
     }
     else
     {
-        std::cout << temp->book_to_string() << std::endl;
+        std::cout << temp->doc_to_string() << std::endl;
     }
 }
 
 //поиск врача по названию специализации
-void find_book_name(std::string posi)
+void find_doc_name(std::string posi)
 {
     int num = 0;
-    for (int i = 0; i < books_array_size; ++i)
+    for (int i = 0; i < doc_array_size; ++i)
     {
-        if (!books_array[i].empty)
+        if (!doctors_array[i].empty)
         {
             ++num;
-            if (books_array[i]._position.compare(posi) == 0)
+            if (is_substring(doctors_array[i]._position,posi))
             {
-                std::cout << num << ". " << books_array[i].book_to_string() << std::endl;
+                std::cout << num << ". " << doctors_array[i].doc_to_string() << std::endl;
             }
         }
     }
 }
 
-//выдача книги читателю
-void read_ticket()
+//выдача направления пациенту
+void read_referral()
 {
     int count_number = 0;
     char localLotNumber[3];
@@ -1178,10 +1153,9 @@ void read_ticket()
             }
             else
             {
-                p = get_listener(main_listener, localLotNumber + add_zero(std::to_string(count_number), 6));
+                p = get_patient(main_patient, localLotNumber + add_zero(std::to_string(count_number), 6));
             }
         }
-        //count_try++;
     } while (is_error || count != 2 || p == nullptr);
     char first_name[23];
     char initials[2];
@@ -1202,7 +1176,7 @@ void read_ticket()
             }
             else
             {
-                book = get_book(std::string(first_name) + std::string(initials));
+                book = get_doc(std::string(first_name) + std::string(initials));
             }
         }
         //count_try++;
@@ -1225,7 +1199,7 @@ void read_ticket()
         element* current = head;
         while (current->next != nullptr)
         {
-            node* listener = get_listener(main_listener, current->data._regNumberPatient);
+            node* listener = get_patient(main_patient, current->data._regNumberPatient);
             if (current->data._doctorFullName == std::string (first_name) + std::string(initials) && current->data._date_return_time == return_date && current->data._take_time == take_time ){
                 std::cout << " Направление к врачу : " << current->data._doctorFullName << " уже выданно " << listener->key._first_name << " " << listener->key._middle_name << std::endl;
                 std::cout << " на время : " << current->data._take_time << " и дату: " << current->data._date_return_time << std::endl;
@@ -1234,24 +1208,22 @@ void read_ticket()
             }
         }
     }
-    Referral tick = Referral(p->key.get_listener_bookd(),
+    Referral tick = Referral(p->key.get_patient_id(),
                              book->get_first_name_and_initials(),
                              take_time,
                              return_date);
     add(head, tick);
     std::cout << "Напрввление выданно." << std::endl;
-    //delete _first_name_and_initials, second_num_code, num, region_code;
-    //delete[] first_code, _localLotNumber, second_code;
 }
 
-//возврат книги в библиотеку
-void return_ticket()
+//возврат направления
+void return_referral()
 {
     if (head == nullptr) {
         std::cout << "Не выдано ни одного направления!" << std::endl;
         return;
     }
-    print_all_given_books();
+    print_all_given_referral();
     int count_number = 0;
     char localLotNumber[3];
     int year_join = 0;
@@ -1275,10 +1247,9 @@ void return_ticket()
             }
             else
             {
-                p = get_listener(main_listener, localLotNumber + add_zero(std::to_string(count_number), 6));
+                p = get_patient(main_patient, localLotNumber + add_zero(std::to_string(count_number), 6));
             }
         }
-        //count_try++;
     } while (is_error || count != 2 || p == nullptr);
     char first_name[23];
     char initials[2];
@@ -1286,7 +1257,6 @@ void return_ticket()
     do {
         count_try = 0;
         std::cout << "Фамилию и инициалы врача: " << std::endl;
-        //std::cin.ignore((std::numeric_limits<short>::max)(), '\n');
         getline(std::cin, input);
         is_error = check_error();
         if (!is_error)
@@ -1295,14 +1265,12 @@ void return_ticket()
             if (count != 2)
             {
                 std::cout << "Ошибка ввода." << std::endl;
-                //count_try++;
             }
             else
             {
-                book = get_book(std::string(first_name) + std::string(initials));
+                book = get_doc(std::string(first_name) + std::string(initials));
             }
         }
-        //count_try++;
     } while (is_error || count != 2 || book->empty );
     std::string take_time;
     do {
@@ -1319,116 +1287,78 @@ void return_ticket()
         element* current = head;
         while (current->next != nullptr)
         {
-            node* listener = get_listener(main_listener, current->data._regNumberPatient);
+            node* listener = get_patient(main_patient, current->data._regNumberPatient);
             if (current->data._doctorFullName == std::string (first_name) + std::string(initials) && current->data._date_return_time == return_date && current->data._take_time == take_time ){
                 std::cout << " Направление к врачу : " << current->data._doctorFullName << " удалено " << listener->key._first_name << " " << listener->key._middle_name << std::endl;
                 std::cout << " на время : " << current->data._take_time << " и дату: " << current->data._date_return_time << std::endl;
-                delete_ticket_book_num(book->get_first_name_and_initials());
+                delete_referral_dock_num(book->get_first_name_and_initials());
                 current = current->next;
                 return;
             }
         }
     }
-    //delete _first_name_and_initials, second_num_code, num, region_code;
-    //delete[] first_code, _localLotNumber, second_code;
-    //delete _first_name_and_initials, second_num_code;
-    //delete[] first_code, second_code;
-    //delete_ticket_book_num(book->get_first_name_and_initials());
 }
 
-
-//добавление номера книги в библиотеку?
-void add_book_library()
+//удаление доктора по номеру
+void remove_doctor()
 {
-    int first_num_code = 0, second_num_code = 0;
+    char second_name[23] , initials[2];
     std::string input;
     bool is_error;
     int count = 0;
     do {
-        std::cout << "Ввод книги по номеру 'NNN.MMM': " << std::endl;
+        std::cin.ignore((std::numeric_limits<short>::max)(), '\n');
+        std::cout << "Введите имя и инициалы врача : " << std::endl;
         getline(std::cin, input);
         is_error = check_error();
         if (!is_error)
         {
-            count = sscanf(input.c_str(), "%3d.%3d", &first_num_code, &second_num_code);
-            if (count != 2)
+            count = sscanf(input.c_str(), "%s.%s", second_name, initials);
+            if (count != 1)
             {
-                std::cout << "Ошибка ввода номера" << std::endl;
+                std::cout << "Ошибка ввода имени" << std::endl;
             }
         }
-    } while (is_error || count != 2);
-    Doctor* book = get_book(add_zero(std::to_string(first_num_code), 3) + "." +
-                            add_zero(std::to_string(second_num_code), 2));
-    if (!book->empty)
+    } while (is_error || count != 1);
+    Doctor* doc = get_doc(std::string(second_name) + std::string(initials));
+    if (doc->empty)
     {
-        if (book->is_have)
-        {
-            book->is_have = false;
-        }
+        std::cout << "Нет врача с данным именем." << std::endl;
     }
-    //delete _first_name_and_initials, second_num_code;
-    //delete[] first_code, second_code;
-}
-
-//удаление книги по номеру
-void remove_book_library()
-{
-    int first_num_code = 0, second_num_code = 0;
-    std::string input;
-    bool is_error;
-    int count = 0;
-    do {
-        std::cout << "Введите номер книги 'NNN.MMM': " << std::endl;
-        getline(std::cin, input);
-        is_error = check_error();
-        if (!is_error)
-        {
-            count = sscanf(input.c_str(), "%3d.%3d", &first_num_code, &second_num_code);
-            if (count != 2)
-            {
-                std::cout << "Ошибка ввода номера" << std::endl;
-            }
-        }
-    } while (is_error || count != 2);
-    Doctor* book = get_book(add_zero(std::to_string(first_num_code), 3) + +"." +
-                            add_zero(std::to_string(second_num_code), 2));
-    if (!book->empty)
+    else
     {
-        if (!book->is_have)
-        {
-            book->is_have = true;
-        }
+        std::cout << doc->doc_to_string() << std::endl;
+        std::cout << "Удаление записи." << std::endl;
+        delete_doc(std::string(second_name) + std::string(initials));
     }
-    //delete _first_name_and_initials, second_num_code;
-    //delete[] first_code, second_code;
 }
 
 //удаление всех книг из библиотеки
-void delete_all_books()
+void delete_all_doctors()
 {
-    delete[] books_array;
-    books_array = new Doctor[books_array_size];
-    std::cout << "Все книги удалены." << std::endl;
+    delete[] doctors_array;
+    doctors_array = new Doctor[doc_array_size];
+    std::cout << "Все врачи удалены." << std::endl;
 }
 
-node* get_listener(node* p, std::string bookd)
+node* get_patient(node* p, std::string id)
 {
     if (!p)
     {
         return nullptr;
     }
-    int comp = p->key.get_listener_bookd().compare(bookd);
+    int comp = p->key.get_patient_id().compare(id);
     if (comp == 0)
     {
         return p;
     }
     if (comp < 0)
     {
-        return get_listener(p->left, bookd);
+        return get_patient(p->left, id);
     }
     else
     {
-        return get_listener(p->right, bookd);
+        return get_patient(p->right, id);
     }
 }
 
@@ -1503,7 +1433,7 @@ bool inputValidation(char chr, bool message)
 }
 
 //вывод выданных книг
-void print_all_given_books()
+void print_all_given_referral()
 {
     if (head == nullptr) {
         std::cout << "Не выдано ни одного направления !" << std::endl;
@@ -1513,7 +1443,7 @@ void print_all_given_books()
     element* current = head;
     while (current->next != nullptr)
     {
-        node* listener = get_listener(main_listener, current->data._regNumberPatient);
+        node* listener = get_patient(main_patient, current->data._regNumberPatient);
         std::cout << "Направление к врачу: " << current->data._doctorFullName << " выдано пациенту " << listener->key._first_name << " " << listener->key._middle_name << std::endl;
         std::cout << " ID пациента " << current->data._regNumberPatient << std::endl;
         std::cout << "Время : " << current->data._take_time << " , дата : " << current->data._date_return_time << std::endl;
@@ -1535,13 +1465,13 @@ void start(){
                              "www ленинград");
     //delete region_code, num;
     //delete[] localLotNumber;
-    main_listener = insert(main_listener, client);
+    main_patient = insert(main_patient, client);
     Doctor book = Doctor(
             "ПетровПП",
-            "Флеболог",
             "9:00 - 17:00",
+            "Флеболог",
             1);
-    add_book(book);
+    add_doctor(book);
     Referral tick = Referral(std::to_string(99999998),
                              "ПетровПП",
                              "13:13",

@@ -1,9 +1,6 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <limits>
-#include <cstdint>
 #include <cstring>
 # define NO_OF_CHARS 256
 //#include "books.h"
@@ -230,28 +227,13 @@ void print_all_given_books();
 std::string readTime();
 void badCharHeuristic(std::string str, int size, int badchar[NO_OF_CHARS]);
 int max(int a, int b);
+void start();
 
 
 int main()
 {
-    Patient client = Patient(std::to_string(999998),
-                             std::to_string(99),
-                             1989,
-                             "Иван",
-                             "Иванов",
-                             "Иванович",
-                             "some company",
-                             "www ленинград");
-    //delete region_code, num;
-    //delete[] localLotNumber;
-    main_listener = insert(main_listener, client);
-    Doctor book = Doctor(
-            "ПетровПП",
-            "Флеболог",
-            "9:00 - 17:00",
-            1);
+    start();
     //delete[] first_name_and_initials;
-    add_book(book);
     unsigned short command;
     std::string str;
     while (true)
@@ -847,46 +829,30 @@ std::string readTime()
 {
     std::string input;
     std::string res;
-    int day, month, year;
+    int hour, minits;
 
-    std::cout << "Ввод дня: ";
-    std::cin >> day;
+    std::cout << " В котором часу : ";
+    std::cin >> hour;
     if (!std::cin.fail())
     {
-        if (day <= 0)
+        if (hour <= 0 || hour > 24)
         {
-            std::cout << "Ошибка ввода дня." << std::endl;
+            std::cout << "Ошибка ввода часа." << std::endl;
             return "";
         }
     }
 
-    std::cout << "Ввод месяца: ";
-    std::cin >> month;
+    std::cout << "Во сколько минут: ";
+    std::cin >> minits;
 
     if (!std::cin.fail())
     {
-        if (month <= 0 || month > 12)
+        if (minits <= 0 || minits > 59)
         {
-            std::cout << "Ошибка ввода месяца." << std::endl;
+            std::cout << "Ошибка ввода минут." << std::endl;
             return "";
         }
-        if (months[month - 1] <= day)
-        {
-            std::cout << "Ошибка ввода дня." << std::endl;
-            return "";
-        }
-    }
-    std::cout << "Ввод года: ";
-    std::cin >> year;
-
-    if (!std::cin.fail())
-    {
-        if (year <= 1900 || year >= 2025)
-        {
-            std::cout << "Ошибка ввода года.";
-            return "";
-        }
-        return std::to_string(day) + "/" + std::to_string(month) + "/" + std::to_string(year);
+        return std::to_string(hour) + ":" + std::to_string(minits);
     }
     return "";
 }
@@ -1217,33 +1183,34 @@ void read_ticket()
         }
         //count_try++;
     } while (is_error || count != 2 || p == nullptr);
-    char *first_name_and_initials;
+    char first_name[23];
+    char initials[2];
     Doctor* book = nullptr;
     do {
         count_try = 0;
         std::cout << "Фамилию и инициалы врача: " << std::endl;
-        std::cin.ignore((std::numeric_limits<short>::max)(), '\n');
+        //std::cin.ignore((std::numeric_limits<short>::max)(), '\n');
         getline(std::cin, input);
         is_error = check_error();
         if (!is_error)
         {
-            count = sscanf(input.c_str(), "%s", first_name_and_initials);
-            if (count != 0)
+            count = sscanf(input.c_str(),"%s %s", first_name, initials);
+            if (count != 2)
             {
                 std::cout << "Ошибка ввода." << std::endl;
                 //count_try++;
             }
             else
             {
-                book = get_book(first_name_and_initials);
+                book = get_book(std::string(first_name) + std::string(initials));
             }
         }
         //count_try++;
-    } while (is_error || count != 0 || book->empty );
+    } while (is_error || count != 2 || book->empty );
     std::string take_time;
     do {
         std::cout << "Ведите время приёма : " << std::endl;
-        take_time = readDate();
+        take_time = readTime();
     } while (take_time.empty());
     std::string return_date;
     do {
@@ -1252,21 +1219,20 @@ void read_ticket()
     } while (return_date.empty());
 
     if (head == nullptr) {
-        std::cout << "Не выдано ни одной книги!" << std::endl;
+        std::cout << "Не выдано ни одного направления!" << std::endl;
     }
-
-    element* current = head;
-    while (current->next != nullptr)
-    {
-        node* listener = get_listener(main_listener, current->data._regNumberPatient);
-        if (current->data._doctorFullName == first_name_and_initials && current->data._date_return_time == return_date && current->data._take_time == take_time ){
-            std::cout << " Направление к врачу : " << current->data._doctorFullName << " уже выданно " << listener->key._first_name << " " << listener->key._middle_name << std::endl;
-            std::cout << " на время : " << current->data._take_time << " и дату: " << current->data._date_return_time << std::endl;
-            current = current->next;
-            return;
+    if (head != nullptr){
+        element* current = head;
+        while (current->next != nullptr)
+        {
+            node* listener = get_listener(main_listener, current->data._regNumberPatient);
+            if (current->data._doctorFullName == std::string (first_name) + std::string(initials) && current->data._date_return_time == return_date && current->data._take_time == take_time ){
+                std::cout << " Направление к врачу : " << current->data._doctorFullName << " уже выданно " << listener->key._first_name << " " << listener->key._middle_name << std::endl;
+                std::cout << " на время : " << current->data._take_time << " и дату: " << current->data._date_return_time << std::endl;
+                current = current->next;
+                return;
+            }
         }
-
-
     }
     Referral tick = Referral(p->key.get_listener_bookd(),
                              book->get_first_name_and_initials(),
@@ -1281,40 +1247,90 @@ void read_ticket()
 //возврат книги в библиотеку
 void return_ticket()
 {
+    if (head == nullptr) {
+        std::cout << "Не выдано ни одного направления!" << std::endl;
+        return;
+    }
+    print_all_given_books();
+    int count_number = 0;
+    char localLotNumber[3];
+    int year_join = 0;
     std::string input;
     bool is_error;
-    int count = 0;
-    int first_num_code = 0, second_num_code = 0;
-    Doctor* book = nullptr;
-    std::cin.ignore((std::numeric_limits<short>::max)(), '\n');
+    int count = 0, count_try = 0;
+    node* p = nullptr;
     do {
-        std::cout << "Введите номер книги 'NNN.MMM' для возврата " << std::endl;
+        count_try = 0;
+        std::cout << "Введите регистрационный номер MMNNNNNN, : " << std::endl;
+        std::cin.ignore((std::numeric_limits<short>::max)(), '\n');
         getline(std::cin, input);
         is_error = check_error();
         if (!is_error)
         {
-            count = sscanf(input.c_str(), "%3d.%3d", &first_num_code, &second_num_code);
+            count = sscanf(input.c_str(), "%2s%6d", localLotNumber, &count_number);
             if (count != 2)
             {
-                std::cout << "Ошибка ввода номера." << std::endl;
+                std::cout << "Ошибка ввода регистрационного номера." << std::endl;
+                //count_try++;
             }
             else
             {
-                book = get_book(add_zero(std::to_string(first_num_code), 3) + "." +
-                                add_zero(std::to_string(second_num_code), 2));
-                if (!book->empty && !book->is_have)
-                {
-                    delete_ticket_book_num(book->get_first_name_and_initials());
-                    std::cout << "Книга возвращена в библиотеку." << std::endl;
-                    book->is_have = true;
-                    //delete _first_name_and_initials, second_num_code;
-                    //delete[] first_code, second_code;
-                    return;
-                }
+                p = get_listener(main_listener, localLotNumber + add_zero(std::to_string(count_number), 6));
             }
         }
-    } while (is_error || count != 2 || book->empty || !book->is_have);
-    book->is_have = false;
+        //count_try++;
+    } while (is_error || count != 2 || p == nullptr);
+    char first_name[23];
+    char initials[2];
+    Doctor* book = nullptr;
+    do {
+        count_try = 0;
+        std::cout << "Фамилию и инициалы врача: " << std::endl;
+        //std::cin.ignore((std::numeric_limits<short>::max)(), '\n');
+        getline(std::cin, input);
+        is_error = check_error();
+        if (!is_error)
+        {
+            count = sscanf(input.c_str(),"%s %s", first_name, initials);
+            if (count != 2)
+            {
+                std::cout << "Ошибка ввода." << std::endl;
+                //count_try++;
+            }
+            else
+            {
+                book = get_book(std::string(first_name) + std::string(initials));
+            }
+        }
+        //count_try++;
+    } while (is_error || count != 2 || book->empty );
+    std::string take_time;
+    do {
+        std::cout << "Ведите время приёма : " << std::endl;
+        take_time = readTime();
+    } while (take_time.empty());
+    std::string return_date;
+    do {
+        std::cout << "Введите дату приёма: " << std::endl;
+        return_date = readDate();
+    } while (return_date.empty());
+
+    if (head != nullptr){
+        element* current = head;
+        while (current->next != nullptr)
+        {
+            node* listener = get_listener(main_listener, current->data._regNumberPatient);
+            if (current->data._doctorFullName == std::string (first_name) + std::string(initials) && current->data._date_return_time == return_date && current->data._take_time == take_time ){
+                std::cout << " Направление к врачу : " << current->data._doctorFullName << " удалено " << listener->key._first_name << " " << listener->key._middle_name << std::endl;
+                std::cout << " на время : " << current->data._take_time << " и дату: " << current->data._date_return_time << std::endl;
+                delete_ticket_book_num(book->get_first_name_and_initials());
+                current = current->next;
+                return;
+            }
+        }
+    }
+    //delete _first_name_and_initials, second_num_code, num, region_code;
+    //delete[] first_code, _localLotNumber, second_code;
     //delete _first_name_and_initials, second_num_code;
     //delete[] first_code, second_code;
     //delete_ticket_book_num(book->get_first_name_and_initials());
@@ -1433,8 +1449,8 @@ void help_command()
     std::cout << "\t11. Поиск врача по имени.\n";
     std::cout << "\t12. Поиск врача по должности.\n";
     std::cout << "\t13. Записать пациента к врачу.\n";
-    std::cout << "\t14. Вернуть книгу в библиотеку.\n";
-    std::cout << "\t15. Показать список выданных книг.\n";
+    std::cout << "\t14. Вернуть направление.\n";
+    std::cout << "\t15. Показать список выданных направлений.\n";
     std::cout << "\t16. Выход из программы.\n";
     std::cout << "Введите номер команды.\n";
     std::cout << "Команда: ";
@@ -1490,7 +1506,7 @@ bool inputValidation(char chr, bool message)
 void print_all_given_books()
 {
     if (head == nullptr) {
-        std::cout << "Не выдано ни одной книги!" << std::endl;
+        std::cout << "Не выдано ни одного направления !" << std::endl;
         return;
     }
 
@@ -1498,12 +1514,37 @@ void print_all_given_books()
     while (current->next != nullptr)
     {
         node* listener = get_listener(main_listener, current->data._regNumberPatient);
-        std::cout << "Книга под номером: " << current->data._doctorFullName << " выдана " << listener->key._first_name << " " << listener->key._middle_name << std::endl;
-        std::cout << "Взята: " << current->data._take_time << " , должна быть возвращена: " << current->data._date_return_time << std::endl;
+        std::cout << "Направление к врачу: " << current->data._doctorFullName << " выдано пациенту " << listener->key._first_name << " " << listener->key._middle_name << std::endl;
+        std::cout << " ID пациента " << current->data._regNumberPatient << std::endl;
+        std::cout << "Время : " << current->data._take_time << " , дата : " << current->data._date_return_time << std::endl;
         current = current->next;
         if (current->next == current)
         {
             return;
         }
     }
+}
+void start(){
+    Patient client = Patient(std::to_string(999998),
+                             std::to_string(99),
+                             1989,
+                             "Иван",
+                             "Иванов",
+                             "Иванович",
+                             "some company",
+                             "www ленинград");
+    //delete region_code, num;
+    //delete[] localLotNumber;
+    main_listener = insert(main_listener, client);
+    Doctor book = Doctor(
+            "ПетровПП",
+            "Флеболог",
+            "9:00 - 17:00",
+            1);
+    add_book(book);
+    Referral tick = Referral(std::to_string(99999998),
+                             "ПетровПП",
+                             "13:13",
+                             "11/11/2011");
+    add(head, tick);
 }
